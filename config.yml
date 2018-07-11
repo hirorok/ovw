@@ -1,0 +1,35 @@
+--- # block separator
+- hosts: all
+  become: true
+  become_user: root
+  tasks:
+    - name: "install timezone"
+      apk: 
+        name: tzdata
+        state: present
+    - name: "copy timezone filer"
+      shell: cp /usr/share/zoneinfo/Japan /etc/localtime
+      args:
+        creates: /etc/localtime/Japan
+- hosts: ovs
+  become: true
+  become_user: root
+  tasks:
+    - name: "ovs install"
+      apk:
+        name: openvswitch
+        state: present
+        update_cache: yes
+    - service:
+        name: ovs-modules
+        enabled: yes
+        state: started
+    - service:
+        name: ovsdb-server
+        enabled: yes
+        state: started
+    - service:
+        name: ovs-vswitchd
+        enabled: yes
+        state: started
+
