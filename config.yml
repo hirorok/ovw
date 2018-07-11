@@ -8,9 +8,9 @@
         name: tzdata
         state: present
     - name: "copy timezone filer"
-      shell: cp /usr/share/zoneinfo/Japan /etc/localtime
+      command: cp -p /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
       args:
-        creates: /etc/localtime/Japan
+        creates: /etc/localtime/Tokyo
 - hosts: ovs
   become: true
   become_user: root
@@ -32,4 +32,30 @@
         name: ovs-vswitchd
         enabled: yes
         state: started
+- hosts: odl
+  become: true
+  become_user: root
+  tasks:
+    - name: install gnutar
+      apk:
+        name: tar
+        state: present
+        update_cache: yes
+    - name: jdk installation
+      apk:
+        name: openjdk8
+        state: present
+        update_cache: yes
+    - file:
+       name: /opt
+       state: directory
+    - name: untar karaf
+      unarchive:
+        src: https://nexus.opendaylight.org/content/repositories/public/org/opendaylight/integration/karaf/0.7.3/karaf-0.7.3.tar.gz
+        dest: /opt
+        remote_src: yes
+        owner: vagrant
+        mode: 0766
+        creates: /opt/karaf-0.7.3
+
 
